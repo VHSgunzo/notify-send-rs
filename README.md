@@ -10,6 +10,9 @@ git clone https://github.com/VHSgunzo/notify-send-rs.git && cd notify-send-rs
 
 * **Compile a binary**
 ```
+rustup default nightly
+rustup target add x86_64-unknown-linux-musl
+rustup component add rust-src --toolchain nightly
 cross +nightly build -Z build-std=std,panic_abort -Z build-std-features=panic_immediate_abort --release --target x86_64-unknown-linux-musl
 ```
 * Or take an already precompiled binary file from the [releases](https://github.com/VHSgunzo/notify-send-rs/releases)
