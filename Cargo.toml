@@ -1,0 +1,33 @@
+[package]
+name = "notify-send-rs"
+version = "0.0.1"
+authors = ["VHSgunzo <vhsgunzo.github.io>"]
+description = "Rust version of notify-send for display notifications on the linux desktop using https://docs.rs/notify-rust"
+keywords = ["desktop", "notification", "notify", "dbus", "libnotify", "notify-send"]
+license = "MIT"
+readme = "README.md"
+
+[dependencies.notify-rust]
+version = "4.5"
+default-features = false
+
+[dependencies.dbus]
+version = "0.9.7"
+features = ["vendored"]
+
+[features]
+default = ["d"]
+d = ["notify-rust/d"]
+z = ["notify-rust/z"]
+images = ["notify-rust/images"]
+
+[profile.release]
+lto = true
+panic = "abort"
+opt-level = "z"
+strip = "symbols"
+codegen-units = 1
+
+[dependencies.clap]
+version = "3.0.0"
+features = [ "derive", "cargo" ]

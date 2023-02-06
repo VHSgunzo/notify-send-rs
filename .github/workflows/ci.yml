@@ -1,0 +1,46 @@
+name: CI
+
+on:
+  push:
+    branches:
+    - action
+    tags:
+    - '*'
+
+jobs:
+  build_and_release:
+    name: notify-send-rs
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Setup toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          override: true
+          profile: minimal
+          toolchain: nightly
+          target: x86_64-unknown-linux-gnu
+
+      - name: Build
+        run: >
+          cargo install cross;
+          cross +nightly build -Z build-std=std,panic_abort -Z build-std-features=panic_immediate_abort --release;
+
+      - name: Strip and UPX
+        run: >
+          sudo bash -c 'apt update && apt install upx binutils -y';
+          strip -s -R .comment -R .gnu.version --strip-unneeded target/x86_64-unknown-linux-gnu/release/notify-send-rs;
+          upx -9 --best target/x86_64-unknown-linux-gnu/release/notify-send-rs -o target/x86_64-unknown-linux-gnu/release/notify-send-rs-upx;
+          cp target/x86_64-unknown-linux-gnu/release/{notify-send-rs,notify-send-rs-upx} .
+
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          files: notify-send-rs*
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
