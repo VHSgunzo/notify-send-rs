@@ -25,22 +25,36 @@ jobs:
           toolchain: nightly
           target: x86_64-unknown-linux-gnu
 
-      - name: Build
+      - name: Build with zbus
         run: >
           cargo install cross;
           cross +nightly build -Z build-std=std,panic_abort -Z build-std-features=panic_immediate_abort --release;
+          mv -fv target/x86_64-unknown-linux-musl/release/notify-send-rs .
 
-      - name: Strip and UPX
+      - name: Build with dbus
+        run: >
+          echo -e '\n[dependencies.dbus]\nversion = "0.9.7"\nfeatures = ["vendored"]' >> Cargo.toml;
+          cross +nightly build -Z build-std=std,panic_abort -Z build-std-features=panic_immediate_abort --release --target x86_64-unknown-linux-gnu --features d --no-default-features;
+          mv -fv target/x86_64-unknown-linux-gnu/release/notify-send-rs ./notify-send-rs-dbus;
+
+      - name: Strip UPX TAR
         run: >
           sudo bash -c 'apt update && apt install upx binutils -y';
-          strip -s -R .comment -R .gnu.version --strip-unneeded target/x86_64-unknown-linux-gnu/release/notify-send-rs;
-          upx -9 --best target/x86_64-unknown-linux-gnu/release/notify-send-rs -o target/x86_64-unknown-linux-gnu/release/notify-send-rs-upx;
-          cp target/x86_64-unknown-linux-gnu/release/{notify-send-rs,notify-send-rs-upx} .
+          strip -s -R .comment -R .gnu.version --strip-unneeded notify-send-rs;
+          strip -s -R .comment -R .gnu.version --strip-unneeded notify-send-rs-dbus;
+          upx -9 --best notify-send-rs -o notify-send-rs-upx;
+          upx -9 --best notify-send-rs-dbus -o notify-send-rs-dbus-upx;
+          tar -acvf notify-send-rs.tar.xz ./notify-send-rs*
+
+      - name: Build archlinux package
+        uses: countstarlight/arch-makepkg-action@master
+        with:
+          scripts: makepkg
 
       - name: Release
         uses: softprops/action-gh-release@v1
         if: startsWith(github.ref, 'refs/tags/')
         with:
-          files: notify-send-rs*
+          files: notify-send-rs.*tar.*
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

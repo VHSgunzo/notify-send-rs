@@ -11,12 +11,8 @@ readme = "README.md"
 version = "4.5"
 default-features = false
 
-[dependencies.dbus]
-version = "0.9.7"
-features = ["vendored"]
-
 [features]
-default = ["d"]
+default = ["z"]
 d = ["notify-rust/d"]
 z = ["notify-rust/z"]
 images = ["notify-rust/images"]
