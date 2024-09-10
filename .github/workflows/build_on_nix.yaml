@@ -1,4 +1,4 @@
-name: ⚙️ Build importenv 📦
+name: ⚙️ Build notify-send-rs 📦
 on:
   workflow_dispatch:
   schedule:
@@ -7,7 +7,7 @@ on:
 #------------------------------------------------------------------------------------#
 jobs:
     build-x86_64-Linux:
-      name: Build importenv (x86_64-Linux)
+      name: Build notify-send-rs (x86_64-Linux)
       runs-on: ubuntu-latest
       permissions:
         contents: write
@@ -83,7 +83,7 @@ jobs:
                 /tmp/ARTIFACTS-x86_64-Linux.tar
 #------------------------------------------------------------------------------------#
     build-aarch64-Linux:
-        name: Build importenv (aarch64-Linux)
+        name: Build notify-send-rs (aarch64-Linux)
         runs-on: ubuntu-latest
         permissions:
           contents: write
@@ -189,7 +189,7 @@ jobs:
                   /tmp/ARTIFACTS-aarch64-Linux.tar
 #------------------------------------------------------------------------------------#
     create-release:
-      name: Create importenv Release
+      name: Create notify-send-rs Release
       runs-on: ubuntu-latest
       needs: [build-x86_64-Linux, build-aarch64-Linux]
       permissions: write-all      
@@ -308,9 +308,9 @@ jobs:
       - name: Releaser
         uses: softprops/action-gh-release@v2.0.8
         with:
-          name: "importenv ${{ env.PKG_VERSION}}"
+          name: "notify-send-rs ${{ env.PKG_VERSION}}"
           tag_name: "${{ env.PKG_VERSION }}"
-          #tag_name: "importenv_${{ env.PKG_VERSION }}_${{ env.UTC_TIME }}"
+          #tag_name: "notify-send-rs_${{ env.PKG_VERSION }}_${{ env.UTC_TIME }}"
           prerelease: false
           draft: false
           generate_release_notes: false
@@ -323,7 +323,7 @@ jobs:
       - name: Releaser
         uses: softprops/action-gh-release@v2.0.8
         with:
-          name: "importenv-@latest"
+          name: "notify-send-rs-@latest"
           tag_name: "continuous"
           prerelease: false
           draft: false
@@ -361,7 +361,7 @@ jobs:
            #Get src 
             mkdir -p "/build-bins" && cd "/build-bins"
             chown -R "runner:runner" "/build-bins"
-            curl -qfsSL "https://raw.githubusercontent.com/Azathothas/importenv/main/PKGBUILD" -o "./PKGBUILD"
+            curl -qfsSL "https://raw.githubusercontent.com/Azathothas/notify-send-rs/main/PKGBUILD" -o "./PKGBUILD"
             sudo -u "runner" makepkg --force --syncdeps --cleanbuild --clean --noconfirm
             sudo -u "runner" find . -type f \( ! -name "*.pkg.tar.zst" -o -name "*-debug-*.pkg.tar.zst" \) -delete
            '
@@ -393,7 +393,7 @@ jobs:
            #Get src 
             mkdir -p "/build-bins" && cd "/build-bins"
             chown -R "runner:runner" "/build-bins"
-            curl -qfsSL "https://raw.githubusercontent.com/Azathothas/importenv/main/PKGBUILD" -o "./PKGBUILD"
+            curl -qfsSL "https://raw.githubusercontent.com/Azathothas/notify-send-rs/main/PKGBUILD" -o "./PKGBUILD"
             sudo -u "runner" makepkg --force --syncdeps --cleanbuild --clean --noconfirm
             sudo -u "runner" find . -type f \( ! -name "*.pkg.tar.zst" -o -name "*-debug-*.pkg.tar.zst" \) -delete
            '
@@ -409,7 +409,7 @@ jobs:
       - name: Releaser
         uses: softprops/action-gh-release@v2.0.8
         with:
-          name: "importenv ${{ env.PKG_VERSION}}"
+          name: "notify-send-rs ${{ env.PKG_VERSION}}"
           tag_name: "${{ env.PKG_VERSION }}"
           prerelease: false
           draft: false
