@@ -57,12 +57,12 @@ nix --version && nix-channel --list && nix-channel --update --cores "$(($(nproc)
 
 ##-------------------------------------------------------#
 ##Install 7z
-pushd "$($TMPDIRS)" >/dev/null 2>&1 && curl -A "${USER_AGENT}" -qfsSLJO "https://www.7-zip.org/$(curl -A "${USER_AGENT}" -qfsSL "https://www.7-zip.org/download.html" | grep -o 'href="[^"]*"' | sed 's/href="//' | grep -i "$(uname -s)-$(uname -m | sed 's/$(uname -m)/x64\\|$(uname -m)/;s/aarch64/arm64\\|aarch64/')" | sed 's/"$//' | sort -n -r | head -n 1)" 2>/dev/null
+set -x ; pushd "$($TMPDIRS)" >/dev/null 2>&1 && curl -A "${USER_AGENT}" -qfsSLJO "https://www.7-zip.org/$(curl -A "${USER_AGENT}" -qfsSL "https://www.7-zip.org/download.html" | grep -o 'href="[^"]*"' | sed 's/href="//' | grep -i "$(uname -s)-$(uname -m | sed 's/$(uname -m)/x64\\|$(uname -m)/;s/aarch64/arm64\\|aarch64/')" | sed 's/"$//' | sort -n -r | head -n 1)" 2>/dev/null
 find "." -type f -name '*.xz' -exec tar -xf {} \; 2>/dev/null
 sudo find "." -type f -name '7zzs' ! -name '*.xz' -exec mv {} "/usr/bin/7z" \; 2>/dev/null
 sudo cp "/usr/bin/7z" "/usr/local/bin/7z" 2>/dev/null
 sudo chmod +x "/usr/bin/7z" "/usr/local/bin/7z" 2>/dev/null ; 7z
-popd >/dev/null 2>&1
+popd >/dev/null 2>&1 ; set +x
 ##-------------------------------------------------------#
 
 ##-------------------------------------------------------#
