@@ -15,5 +15,7 @@ jobs:
           path: main
           filter: "blob:none"
 
-      - name: Validate package
-        uses: heyhusen/archlinux-package-action@v2    
+      - name: Build archlinux package
+        uses: countstarlight/arch-makepkg-action@master
+        with:
+          scripts: makepkg
