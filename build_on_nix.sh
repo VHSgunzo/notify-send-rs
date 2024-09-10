@@ -11,7 +11,7 @@
 ##-------------------------------------------------------#
 ##Install CoreUtils & Deps
 export DEBIAN_FRONTEND="noninteractive"
-echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections
+echo 'debconf debconf/frontend select Noninteractive' | sudo debconf-set-selections
 sudo apt update -y -qq
 sudo apt install 7zip b3sum bc binutils binutils-aarch64-linux-gnu coreutils curl dos2unix fdupes jq moreutils wget -y -qq
 sudo apt-get install apt-transport-https apt-utils b3sum bc binutils binutils-aarch64-linux-gnu ca-certificates coreutils dos2unix fdupes gnupg2 jq moreutils p7zip-full rename rsync software-properties-common texinfo tmux upx util-linux wget -y -qq 2>/dev/null ; sudo apt-get update -y 2>/dev/null
