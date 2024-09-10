@@ -61,7 +61,7 @@ pushd "$($TMPDIRS)" >/dev/null 2>&1 && curl -A "${USER_AGENT}" -qfsSLJO "https:/
 find "." -type f -name '*.xz' -exec tar -xf {} \; 2>/dev/null
 sudo find "." -type f -name '7zzs' ! -name '*.xz' -exec mv {} "/usr/bin/7z" \; 2>/dev/null
 sudo cp "/usr/bin/7z" "/usr/local/bin/7z" 2>/dev/null
-sudo chmod +x "/usr/bin/7z" "/usr/local/bin/7z" 2>/dev/null
+sudo chmod +x "/usr/bin/7z" "/usr/local/bin/7z" 2>/dev/null ; 7z
 popd >/dev/null 2>&1
 ##-------------------------------------------------------#
 
@@ -110,8 +110,14 @@ curl -qfsSL "https://raw.githubusercontent.com/alpinelinux/alpine-chroot-install
 sudo "${ALPINE_CHROOT}/alpine-chroot-install" -d "${ALPINE_CHROOT}"
 sudo "${ALPINE_CHROOT}/enter-chroot" apk update && apk upgrade --no-interactive 2>/dev/null
 echo "$ALPINE_DEPS" | xargs sudo "${ALPINE_CHROOT}/enter-chroot" apk add --latest --upgrade --no-interactive
-sudo "${ALPINE_CHROOT}/enter-chroot" apk add rustup --latest --upgrade --no-interactive 2>/dev/null 
-sudo "${ALPINE_CHROOT}/enter-chroot" rustup-init -y
+#Rust
+sudo "${ALPINE_CHROOT}/enter-chroot" bash -c '
+ pushd "$(mktemp -d)" >/dev/null 2>&1
+ curl -qfsSL "https://sh.rustup.rs" -o "./rustup.sh"
+ chmod +x "./rustup.sh"
+ "./rustup.sh" -y
+ source "$HOME/.cargo/env"
+ cargo version'
 popd >/dev/null 2>&1
 ##-------------------------------------------------------#
 
