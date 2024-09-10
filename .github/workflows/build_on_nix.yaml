@@ -251,13 +251,13 @@ jobs:
           ##extract
           cd "/tmp/RELEASES" && find "." -type f -name '*tar*' | xargs -I {} tar -xvf {}
           ##ReAdd
-          find "." -type f -name '*aarch64-Linux*' ! -name '*.upx*' ! -name '*.tar' ! -name '*.xz' -print0 | xargs -0 tar --transform 's/-aarch64-Linux//' -cvf "./aarch64-Linux.tar"
+          find "." -type f -name '*aarch64-Linux*' ! -name '*.upx*' ! -name '*.tar' ! -name '*.xz' -print0 | xargs -0 tar --transform 's|.*/||' --transform 's/-aarch64-Linux//' -cvf "./aarch64-Linux.tar"
           7z a -txz -mx="9" -mmt="$(($(nproc)+1))" -bt "./aarch64-Linux.tar.xz" "./aarch64-Linux.tar" 2>/dev/null
-          find "." -type f -name '*aarch64-Linux.upx*' ! -name '*.tar' ! -name '*.xz' -print0 | xargs -0 tar --transform 's/-aarch64-Linux.upx//' -cvf "./aarch64-Linux.upx.tar"
+          find "." -type f -name '*aarch64-Linux.upx*' ! -name '*.tar' ! -name '*.xz' -print0 | xargs -0 tar --transform 's|.*/||' --transform 's/-aarch64-Linux.upx//' -cvf "./aarch64-Linux.upx.tar"
           7z a -txz -mx="9" -mmt="$(($(nproc)+1))" -bt "./aarch64-Linux.upx.tar.xz" "./aarch64-Linux.upx.tar" 2>/dev/null
-          find "." -type f -name '*x86_64-Linux*' ! -name '*.upx*' ! -name '*.tar' ! -name '*.xz' -print0 | xargs -0 tar --transform 's/-x86_64-Linux//' -cvf "./x86_64-Linux.tar"
+          find "." -type f -name '*x86_64-Linux*' ! -name '*.upx*' ! -name '*.tar' ! -name '*.xz' -print0 | xargs -0 tar --transform 's|.*/||' --transform 's/-x86_64-Linux//' -cvf "./x86_64-Linux.tar"
           7z a -txz -mx="9" -mmt="$(($(nproc)+1))" -bt "./x86_64-Linux.tar.xz" "./x86_64-Linux.tar" 2>/dev/null
-          find "." -type f -name '*x86_64-Linux.upx*' ! -name '*.tar' ! -name '*.xz' -print0 | xargs -0 tar --transform 's/-x86_64-Linux.upx//' -cvf "./x86_64-Linux.upx.tar"
+          find "." -type f -name '*x86_64-Linux.upx*' ! -name '*.tar' ! -name '*.xz' -print0 | xargs -0 tar --transform 's|.*/||' --transform 's/-x86_64-Linux.upx//' -cvf "./x86_64-Linux.upx.tar"
           7z a -txz -mx="9" -mmt="$(($(nproc)+1))" -bt "./x86_64-Linux.upx.tar.xz" "./x86_64-Linux.upx.tar" 2>/dev/null
           ##VERSION
           (find "." -name 'VERSION.txt' ! -path './VERSION.txt' -exec cat {} + | sort -u | tr -d '\n' | tr -d '[:space:]'> "./VERSION.txt") && find "." -name 'VERSION.txt' ! -path './VERSION.txt' -delete
