@@ -1,0 +1,19 @@
+name: ⚙️ Test 📦
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 0 * * 0" #At 00:00 UTC on Sunday every Week
+jobs:
+    create-pkg:
+      name: Create notify-send-rs Release
+      runs-on: ubuntu-latest
+      permissions: write-all
+      steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          path: main
+          filter: "blob:none"
+
+      - name: Validate package
+        uses: heyhusen/archlinux-package-action@v2    

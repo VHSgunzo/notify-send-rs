@@ -333,3 +333,20 @@ jobs:
             /tmp/RELEASES/*
         continue-on-error: true
 #------------------------------------------------------------------------------------#
+
+#------------------------------------------------------------------------------------#
+    create-pkg:
+      name: Create notify-send-rs Release
+      runs-on: ubuntu-latest
+      needs: [create-release]
+      permissions: write-all
+      steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          path: main
+          filter: "blob:none"
+
+      - name: Validate package
+        uses: heyhusen/archlinux-package-action@v2
+#------------------------------------------------------------------------------------#        
