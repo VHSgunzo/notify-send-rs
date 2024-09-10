@@ -112,12 +112,10 @@ sudo "${ALPINE_CHROOT}/enter-chroot" apk update && apk upgrade --no-interactive 
 echo "$ALPINE_DEPS" | xargs sudo "${ALPINE_CHROOT}/enter-chroot" apk add --latest --upgrade --no-interactive
 #Rust
 sudo "${ALPINE_CHROOT}/enter-chroot" bash -c '
- pushd "$(mktemp -d)" >/dev/null 2>&1
- curl -qfsSL "https://sh.rustup.rs" -o "./rustup.sh"
- chmod +x "./rustup.sh"
- "./rustup.sh" -y
- source "$HOME/.cargo/env"
- cargo version'
+ #https://github.com/rust-lang/rustup/issues/3428
+ curl -qfsSL "https://static.rust-lang.org/rustup/dist/$(uname -m)-unknown-linux-musl/rustup-init" -o "/usr/bin/rustup-init"
+ chmod +x "/usr/bin/rustup-init" ; rustup-init -y
+ source "$HOME/.cargo/env" ; cargo version'
 popd >/dev/null 2>&1
 ##-------------------------------------------------------#
 
