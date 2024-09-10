@@ -332,21 +332,83 @@ jobs:
           files: |
             /tmp/RELEASES/*
         continue-on-error: true
-#------------------------------------------------------------------------------------#
 
-#------------------------------------------------------------------------------------#
-    create-pkg:
-      name: Create notify-send-rs Release
-      runs-on: ubuntu-latest
-      needs: [create-release]
-      permissions: write-all
-      steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - name: MAKEPKG (aarch64-Linux)
+        run: |
+          #presets
+          set -x ; set +e
+          #-------------#
+          mkdir -p "${SYSTMP}/PKGS"
+          #Build
+          pushd "$(mktemp -d)" >/dev/null 2>&1
+          docker stop "arch-builder" 2>/dev/null ; docker rm "arch-builder" 2>/dev/null
+          docker run --platform="linux/arm64" --privileged --net="host" --name "arch-builder" "archlinux:latest" \
+           bash -c '
+           #Setup ENV
+            pacman -Syu --noconfirm && pacman base-devel coreutils curl git jq less moreutils micro nano rsync sudo util-linux wget --sync --noconfirm
+            useradd -m -s "/bin/bash" "runner"
+            echo "runner:runner" | chpasswd
+            usermod -aG "wheel" "runner"
+            echo "%wheel ALL=(ALL) NOPASSWD: ALL" | tee -a "/etc/sudoers"
+           #Get src 
+            mkdir -p "/build-bins" && cd "/build-bins"
+            chown -R "runner:runner" "/build-bins"
+            curl -qfsSL "https://raw.githubusercontent.com/Azathothas/notify-send-rs/main/PKGBUILD" -o "./PKGBUILD"
+            sudo -u "runner" makepkg --force --syncdeps --cleanbuild --clean --noconfirm
+            sudo -u "runner" find . -type f \( ! -name "*.pkg.tar.zst" -o -name "*-debug-*.pkg.tar.zst" \) -delete
+           '
+          #Copy
+           pushd "$(mktemp -d)" >/dev/null 2>&1
+           find "." -maxdepth 1 -type f -exec sh -c 'file "{}"; du -sh "{}"' \;
+           sudo rsync -av --copy-links --exclude="*/" "./." "${SYSTMP}/PKGS"
+           docker stop "arch-builder" 2>/dev/null ; docker rm "arch-builder"
+           popd >/dev/null 2>&1
+        continue-on-error: true
+
+      - name: MAKEPKG (x86_64-Linux)
+        run: |
+          #presets
+          set -x ; set +e
+          #-------------#
+          mkdir -p "${SYSTMP}/PKGS"
+          #Build
+          pushd "$(mktemp -d)" >/dev/null 2>&1
+          docker stop "arch-builder" 2>/dev/null ; docker rm "arch-builder" 2>/dev/null
+          docker run --privileged --net="host" --name "arch-builder" "archlinux:latest" \
+           bash -c '
+           #Setup ENV
+            pacman -Syu --noconfirm && pacman base-devel coreutils curl git jq less moreutils micro nano rsync sudo util-linux wget --sync --noconfirm
+            useradd -m -s "/bin/bash" "runner"
+            echo "runner:runner" | chpasswd
+            usermod -aG "wheel" "runner"
+            echo "%wheel ALL=(ALL) NOPASSWD: ALL" | tee -a "/etc/sudoers"
+           #Get src 
+            mkdir -p "/build-bins" && cd "/build-bins"
+            chown -R "runner:runner" "/build-bins"
+            curl -qfsSL "https://raw.githubusercontent.com/Azathothas/notify-send-rs/main/PKGBUILD" -o "./PKGBUILD"
+            sudo -u "runner" makepkg --force --syncdeps --cleanbuild --clean --noconfirm
+            sudo -u "runner" find . -type f \( ! -name "*.pkg.tar.zst" -o -name "*-debug-*.pkg.tar.zst" \) -delete
+           '
+          #Copy
+           pushd "$(mktemp -d)" >/dev/null 2>&1
+           find "." -maxdepth 1 -type f -exec sh -c 'file "{}"; du -sh "{}"' \;
+           sudo rsync -av --copy-links --exclude="*/" "./." "${SYSTMP}/PKGS"
+           docker stop "arch-builder" 2>/dev/null ; docker rm "arch-builder"
+           popd >/dev/null 2>&1
+        continue-on-error: true
+
+    #version+pkg
+      - name: Releaser
+        uses: softprops/action-gh-release@v2.0.8
         with:
-          path: main
-          filter: "blob:none"
-
-      - name: Validate package
-        uses: heyhusen/archlinux-package-action@v2
-#------------------------------------------------------------------------------------#        
+          name: "notify-send-rs ${{ env.PKG_VERSION}}"
+          tag_name: "${{ env.PKG_VERSION }}"
+          prerelease: false
+          draft: false
+          generate_release_notes: false
+          body_path: "/tmp/RELEASE_NOTE.md"
+          files: |
+            /tmp/RELEASES/*
+            /tmp/PKGS/*
+        continue-on-error: true
+#------------------------------------------------------------------------------------#
