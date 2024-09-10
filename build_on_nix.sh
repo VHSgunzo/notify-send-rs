@@ -106,14 +106,26 @@ ALPINE_DEPS="
   xxd xxhash xz xz-dev xz-libs xz-static \
   yaml yaml-dev yaml-static \
   zig zlib zlib-dev zlib-static zstd zstd-static"
-curl -qfsSL "https://raw.githubusercontent.com/alpinelinux/alpine-chroot-install/master/alpine-chroot-install" -o "${ALPINE_CHROOT}/alpine-chroot-install" && chmod +x "${ALPINE_CHROOT}/alpine-chroot-install"
-sudo "${ALPINE_CHROOT}/alpine-chroot-install" -d "${ALPINE_CHROOT}"
-sudo "${ALPINE_CHROOT}/enter-chroot" apk update && apk upgrade --no-interactive 2>/dev/null
-echo "$ALPINE_DEPS" | xargs sudo "${ALPINE_CHROOT}/enter-chroot" apk add --latest --upgrade --no-interactive
+#https://wiki.alpinelinux.org/wiki/Alpine_Linux_in_a_chroot  
+curl -qfsSL "https://gitlab.alpinelinux.org/api/v4/projects/5/packages/generic//"$(curl -qfsSL "https://gitlab.alpinelinux.org/api/v4/projects/5/repository/tags" | jq -r '.[0].name' | tr -d '[:space:]')"/aarch64/apk.static" -o "./apk.static"
+chmod +x "./apk.static"
+sudo "./apk.static" -X "https://dl-cdn.alpinelinux.org/alpine/edge/main" -U --allow-untrusted -p "${ALPINE_CHROOT}" --initdb add "alpine-base"
+sudo mount -o bind "/dev" "${ALPINE_CHROOT}/dev"
+sudo mount -t proc "none" "${ALPINE_CHROOT}/proc"
+sudo mount -o bind "/sys" "${ALPINE_CHROOT}/sys"
+echo -e 'nameserver 8.8.8.8\nnameserver 2620:0:ccc::2' | sudo tee "${ALPINE_CHROOT}/etc/resolv.conf"
+sudo mkdir -p "${ALPINE_CHROOT}/etc/apk"
+echo "https://dl-cdn.alpinelinux.org/alpine/edge/main" | sudo tee "${ALPINE_CHROOT}/etc/apk/repositories"
+echo "https://dl-cdn.alpinelinux.org/alpine/edge/community" | sudo tee -a "${ALPINE_CHROOT}/etc/apk/repositories"
+echo "http://dl-cdn.alpinelinux.org/alpine/edge/testing" | sudo tee -a "${ALPINE_CHROOT}/etc/apk/repositories"
+sudo chroot "${ALPINE_CHROOT}" apk update && apk upgrade --no-interactive 2>/dev/null
+echo "$ALPINE_DEPS" | xargs sudo chroot "${ALPINE_CHROOT}" apk add --latest --upgrade --no-interactive
 #Rust
-sudo "${ALPINE_CHROOT}/enter-chroot" bash -c '
+sudo chroot "${ALPINE_CHROOT}" bash -c '
  #https://github.com/rust-lang/rustup/issues/3428
+ pushd "$(mktemp -d)" >/dev/null 2>&1
  curl -qfsSL "https://static.rust-lang.org/rustup/dist/$(uname -m)-unknown-linux-musl/rustup-init" -o "/usr/bin/rustup-init"
+ #export RUSTUP_HOME="/root/.rustup"
  chmod +x "/usr/bin/rustup-init" ; rustup-init -y
  source "$HOME/.cargo/env" ; cargo version'
 popd >/dev/null 2>&1
@@ -124,7 +136,7 @@ popd >/dev/null 2>&1
 ##Build
 #https://github.com/VHSgunzo/notify-send-rs/blob/main/.github/workflows/ci.yml
 pushd "$($TMPDIRS)" >/dev/null 2>&1
-sudo "${ALPINE_CHROOT}/enter-chroot" bash -c '
+sudo chroot "${ALPINE_CHROOT}" bash -c '
  #Setup ENV
   rm -rf  "/build-bins" 2>/dev/null ; mkdir -p "/build-bins" && pushd "$(mktemp -d)" >/dev/null 2>&1
   source "$HOME/.cargo/env"
@@ -143,7 +155,7 @@ sudo "${ALPINE_CHROOT}/enter-chroot" bash -c '
 '
 sudo rsync -av --copy-links --exclude="*/" "${ALPINE_CHROOT}/build-bins/." "${ARTIFACTS}"
 #dbus
-sudo "${ALPINE_CHROOT}/enter-chroot" bash -c '
+sudo chroot "${ALPINE_CHROOT}" bash -c '
  #Setup ENV
   rm -rf  "/build-bins" 2>/dev/null ; mkdir -p "/build-bins" && pushd "$(mktemp -d)" >/dev/null 2>&1
   source "$HOME/.cargo/env"
