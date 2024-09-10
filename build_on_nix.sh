@@ -70,8 +70,9 @@ popd >/dev/null 2>&1
 pushd "$($TMPDIRS)" >/dev/null 2>&1
 curl -qfLJO "$(curl -qfsSL https://api.github.com/repos/upx/upx/releases/latest | jq -r '.assets[].browser_download_url' | grep -i "$(uname -m | sed 's/$(uname -m)/amd64\\|$(uname -m)/;s/aarch64/arm64\\|aarch64/')_$(uname -s)")" 2>/dev/null
 find "." -type f -name '*tar*' -exec tar -xvf {} \; 2>/dev/null
-sudo find "." -type f -name 'upx' -exec mv {} "$(which upx)" \; 2>/dev/null
-sudo chmod +x "$(which upx)" 2>/dev/null
+find "." -type f -exec file -i "{}" \; | grep "application/.*executable" | cut -d":" -f1 | xargs realpath | xargs -I {} sudo cp --force {} "/usr/bin/upx"
+sudo cp "/usr/bin/upx" "/usr/local/bin/upx" 2>/dev/null
+sudo chmod +x "/usr/bin/upx" "/usr/local/bin/upx" 2>/dev/null
 popd >/dev/null 2>&1
 ##-------------------------------------------------------#
 
