@@ -18,4 +18,17 @@ jobs:
       - name: Build archlinux package
         uses: countstarlight/arch-makepkg-action@master
         with:
-          scripts: makepkg
+          scripts: makepkg --force --source  --clean --cleanbuild --noconfirm --nodeps
+
+      - name: Releaser
+        uses: softprops/action-gh-release@v2.0.8
+        with:
+          name: "notify-send-rs-test"
+          tag_name: "test"
+          prerelease: false
+          draft: false
+          generate_release_notes: false
+          body_path: "/tmp/RELEASE_NOTE.md"
+          files: |
+            *.pkg*
+        continue-on-error: true         
