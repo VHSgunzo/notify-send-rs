@@ -8,7 +8,7 @@ url="https://github.com/VHSgunzo/${pkgname}"
 provides=("${pkgname}")
 conflicts=("${pkgname}")
 source=("https://github.com/Azathothas/${pkgname}/releases/download/v${pkgver}/${pkgname}-${CARCH}-Linux")
-sha256sums=('SKIP' 'SKIP')
+sha256sums=('SKIP')
 
 package() {
     install -Dm755 "${pkgname}-${CARCH}-Linux" "$pkgdir/usr/bin/${pkgname}"
