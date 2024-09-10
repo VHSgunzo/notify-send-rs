@@ -42,6 +42,20 @@ jobs:
             #-------------#
             bash "$GITHUB_WORKSPACE/main/build_on_nix.sh"
           continue-on-error: true
+
+        - name: Install 7z (latest)
+          run: |
+            #presets
+            set -x ; set +e
+            #-------------#    
+            pushd "$(mktemp -d)" >/dev/null 2>&1 && curl -A "${USER_AGENT}" -qfsSLJO "https://www.7-zip.org/$(curl -A "${USER_AGENT}" -qfsSL "https://www.7-zip.org/download.html" | grep -o 'href="[^"]*"' | sed 's/href="//' | grep -i "$(uname -s)-$(uname -m | sed 's/x86_64/x64\\|x86_64/;s/aarch64/arm64\\|aarch64/')" | sed 's/"$//' | sort -n -r | head -n 1)" 2>/dev/null
+            find "." -type f -name '*.xz' -exec tar -xf {} \; 2>/dev/null
+            sudo find "." -type f -name '7zzs' ! -name '*.xz' -exec mv {} "/usr/bin/7z" \; 2>/dev/null
+            sudo cp "/usr/bin/7z" "/usr/local/bin/7z" 2>/dev/null
+            sudo chmod +x "/usr/bin/7z" "/usr/local/bin/7z" 2>/dev/null
+            7z 2>/dev/null
+            popd >/dev/null 2>&1
+          continue-on-error: true
   
         - name: Archive Binaries (.tar)
           run: |
