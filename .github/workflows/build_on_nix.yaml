@@ -309,7 +309,7 @@ jobs:
         uses: softprops/action-gh-release@v2.0.8
         with:
           name: "notify-send-rs ${{ env.PKG_VERSION}}"
-          tag_name: "notify-send-rs_${{ env.PKG_VERSION }}"
+          tag_name: "${{ env.PKG_VERSION }}"
           #tag_name: "notify-send-rs_${{ env.PKG_VERSION }}_${{ env.UTC_TIME }}"
           prerelease: false
           draft: false
