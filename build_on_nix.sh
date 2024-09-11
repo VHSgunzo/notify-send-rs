@@ -97,7 +97,7 @@ ALPINE_DEPS="
   keyutils \
   libarchive-static libcaca-static libc-dev libcap-static libcap-ng-static libcurl libelf-static libffi-dev libssh-dev libtasn1-dev libtool libtpms libtpms-dev linux-headers linux-tools lvm2-dev lvm2-static lz4 lz4-dev lz4-libs lz4-static \
   make mariadb-static mesa mesa-dev mesa-gbm meson mlocate mold moreutils musl musl-dev musl-fts musl-obstack-dev musl-utils \
-  nano nasm ncurses ncurses-static nettle-static nghttp2-static ninja-build \
+  nano nasm ncurses ncurses-static nettle-static nghttp2-static ninja-build nss nss-tools nsss\
   openssl openssl-dev openssl-libs-static \
   patchelf pcre2 perl perl-xml-parser pkgconf pkgconfig popt-dev popt-static procps protobuf protobuf-c protobuf-c-compiler protobuf-dev python3 \
   readline readline-dev readline-static rsync \
@@ -108,7 +108,7 @@ ALPINE_DEPS="
   yaml yaml-dev yaml-static \
   zig zlib zlib-dev zlib-static zstd zstd-static"
 #https://wiki.alpinelinux.org/wiki/Alpine_Linux_in_a_chroot  
-curl -qfsSL "https://gitlab.alpinelinux.org/api/v4/projects/5/packages/generic//"$(curl -qfsSL "https://gitlab.alpinelinux.org/api/v4/projects/5/repository/tags" | jq -r '.[0].name' | tr -d '[:space:]')"/aarch64/apk.static" -o "./apk.static"
+curl -qfsSL "https://gitlab.alpinelinux.org/api/v4/projects/5/packages/generic//"$(curl -qfsSL "https://gitlab.alpinelinux.org/api/v4/projects/5/repository/tags" | jq -r '.[0].name' | tr -d '[:space:]')"/$(uname -m)/apk.static" -o "./apk.static"
 chmod +x "./apk.static"
 sudo "./apk.static" -X "https://dl-cdn.alpinelinux.org/alpine/edge/main" -U --allow-untrusted -p "${ALPINE_CHROOT}" --initdb add "alpine-base"
 sudo mount -o bind "/dev" "${ALPINE_CHROOT}/dev"
