@@ -327,7 +327,7 @@ jobs:
         with:
           name: "notify-send-rs-@latest"
           tag_name: "continuous"
-          prerelease: false
+          prerelease: true
           draft: false
           generate_release_notes: false
           body_path: "/tmp/RELEASE_NOTE.md"
