@@ -26,6 +26,7 @@ jobs:
 
       - name: Build with zbus
         run: >
+          sudo bash -c 'apt update && apt install musl-tools -y';
           rustup component add rust-src --toolchain nightly;
           cargo build --release;
           mv -fv target/x86_64-unknown-linux-musl/release/notify-send-rs .
