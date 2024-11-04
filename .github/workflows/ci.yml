@@ -21,7 +21,6 @@ jobs:
         uses: actions-rs/toolchain@v1
         with:
           override: true
-          profile: minimal
           toolchain: nightly
           target: x86_64-unknown-linux-musl
 
