@@ -6,6 +6,7 @@ description = "Rust version of notify-send for display notifications on the linu
 keywords = ["desktop", "notification", "notify", "dbus", "libnotify", "notify-send"]
 license = "MIT"
 readme = "README.md"
+edition = "2021"
 
 [dependencies.notify-rust]
 version = "4.5"
@@ -22,8 +23,13 @@ lto = true
 panic = "abort"
 opt-level = "z"
 strip = "symbols"
+debug  = false
 codegen-units = 1
 
 [dependencies.clap]
 version = "3.0.0"
 features = [ "derive", "cargo" ]
+
+[dependencies.dbus]
+version = "0.9.7"
+features = ["vendored"]

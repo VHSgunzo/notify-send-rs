@@ -1,5 +1,3 @@
-extern crate clap;
-extern crate notify_rust;
 use clap::Parser;
 use clap::ArgEnum;
 use notify_rust::Hint;
